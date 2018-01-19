@@ -14,6 +14,19 @@ public class GuideDataModel {
     private String state;
     private String icon;
 
+    // initialize data to empty in case JSON object is empty.
+    GuideDataModel(){
+        startDate = "";
+        objType = "";
+        endDate = "";
+        name = "";
+        loginRequired = "";
+        url = "";
+        city = "";
+        state = "";
+        icon = "";
+    }
+
     public String getStartDate() {
         return startDate;
     }

@@ -1,5 +1,6 @@
 package com.patrick.guidebookcodechallenge;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -37,83 +38,126 @@ public class UpcomingGuides extends AppCompatActivity {
 
         upcomingGuides = new ArrayList<>();
 
-        // provided API call
-        String url = "https://guidebook.com/service/v2/upcomingGuides/";
+    }
 
-        // create request object for OkHttp
-        final Request request = new Request.Builder().url(url).build();
+    class GetUpComingGuides extends AsyncTask<Void, Void, Void> {
 
-        // request data using OkHttp
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            if (upcomingGuides.size() > 0) {
+                // success update recycler view
+
+            } else {
+                // failed to retrieve data
             }
+        }
 
-            @Override
-            public void onResponse(Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Response was not successful: " + response);
-                } else {
-                    String jsondata = response.body().string();
-                    Log.v(LOGTAG,
-                            "Milestone 1: print out Retrieve and print out the data received from the url");
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // provided API call
+            String url = "https://guidebook.com/service/v2/upcomingGuides/";
 
-                    Log.v(LOGTAG, jsondata);
+            // create request object for OkHttp
+            final Request request = new Request.Builder().url(url).build();
 
-                    // Handle jsonException
+            // request data using OkHttp
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    e.printStackTrace();
+                }
 
-                    try {
-                        jsonObject = new JSONObject(jsondata);
-                        JSONArray jsonArray = jsonObject.getJSONArray(Keys.KEY_DATA);
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Response was not successful: " + response);
+                    } else {
+                        String jsondata = response.body().string();
+                        Log.v(LOGTAG,
+                                "Milestone 1: print out Retrieve and print out the data received from the url");
 
-                        int lengthOfJSONArray = jsonArray.length();
-                        if (lengthOfJSONArray > 0) {
-                            for (int i = 0; i < lengthOfJSONArray; i++) {
-                                GuideDataModel model = new GuideDataModel();
+                        Log.v(LOGTAG, jsondata);
 
-                                // parse JSON object
-                                JSONObject guideItem = jsonArray.getJSONObject(i);
-                                String startDate = guideItem.getString(Keys.KEY_START_DATE);
-                                String endDate = guideItem.getString(Keys.KEY_END_DATE);
-                                String url = guideItem.getString(Keys.KEY_URL);
-                                String name = guideItem.getString(Keys.KEY_NAME);
-                                String icon = guideItem.getString(Keys.KEY_ICON);
+                        // Handle jsonException
 
+                        try {
+                            jsonObject = new JSONObject(jsondata);
+                            JSONArray jsonArray = jsonObject.getJSONArray(Keys.KEY_DATA);
 
-                                // set to data structure
-                                model.setStartDate(startDate);
-                                model.setEndDate(endDate);
-                                model.setUrl(url);
-                                model.setName(name);
-                                model.setIcon(icon);
+                            int lengthOfJSONArray = jsonArray.length();
+                            if (lengthOfJSONArray > 0) {
+                                for (int i = 0; i < lengthOfJSONArray; i++) {
 
-                                // getting info from venue object
-                                JSONObject venueItem = guideItem.getJSONObject(Keys.KEY_VENUE);
+                                    GuideDataModel model = new GuideDataModel();
+                                    String startDate = "";
+                                    String endDate = "";
+                                    String guideURL = "";
+                                    String name = "";
+                                    String icon =  "";
 
-                                // URL did not return item in venue object at time of writing this.
-                                if (venueItem.has(Keys.KEY_CITY) && venueItem.has(Keys.KEY_STATE)) {
-                                    String city = guideItem.getString(Keys.KEY_CITY);
-                                    String state = guideItem.getString(Keys.KEY_STATE);
+                                    // parse JSON object
+                                    JSONObject guideItem = jsonArray.getJSONObject(i);
 
-                                    // set to model
-                                    model.setCity(city);
-                                    model.setState(state);
+                                    // check if item is present
+                                    if (guideItem.has(Keys.KEY_START_DATE)) {
+                                        startDate = guideItem.getString(Keys.KEY_START_DATE);
+                                    }
+                                    if (guideItem.has(Keys.KEY_END_DATE)) {
+                                        endDate = guideItem.getString(Keys.KEY_END_DATE);
+                                    }
+                                    if (guideItem.has(Keys.KEY_URL)) {
+                                        guideURL = guideItem.getString(Keys.KEY_URL);
+                                    }
+                                    if (guideItem.has(Keys.KEY_NAME)) {
+                                        name = guideItem.getString(Keys.KEY_NAME);
+                                    }
+                                    if (guideItem.has(Keys.KEY_ICON)) {
+                                        icon = guideItem.getString(Keys.KEY_ICON);
+                                    }
+                                    if (guideItem.has(Keys.KEY_ICON)) {
+                                        icon = guideItem.getString(Keys.KEY_ICON);
+                                    }
+                                    if (guideItem.has(Keys.KEY_ICON)) {
+                                        icon = guideItem.getString(Keys.KEY_ICON);
+                                    }
+
+                                    // set to data structure
+                                    model.setStartDate(startDate);
+                                    model.setEndDate(endDate);
+                                    model.setUrl(guideURL);
+                                    model.setName(name);
+                                    model.setIcon(icon);
+
+                                    // getting info from venue object
+                                    JSONObject venueItem = guideItem.getJSONObject(Keys.KEY_VENUE);
+
+                                    // URL did not return item in venue object at time of writing this.
+                                    if (venueItem.has(Keys.KEY_CITY) && venueItem.has(Keys.KEY_STATE)) {
+                                        String city = guideItem.getString(Keys.KEY_CITY);
+                                        String state = guideItem.getString(Keys.KEY_STATE);
+
+                                        // set to model
+                                        model.setCity(city);
+                                        model.setState(state);
+                                    }
+
+                                    // add to the list
+                                    // MILESTONE 2: Parse the data retrieved from the server into a list of Java objects
+                                    upcomingGuides.add(model);
                                 }
-
-                                // add to the list
-                                // MILESTONE 2: Parse the data retrieved from the server into a list of Java objects
-                                upcomingGuides.add(model);
                             }
-                        }
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-        });
+            });
 
 
+            return null;
+        }
     }
 }
