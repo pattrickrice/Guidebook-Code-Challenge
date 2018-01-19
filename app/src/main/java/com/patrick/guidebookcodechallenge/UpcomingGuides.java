@@ -1,9 +1,13 @@
 package com.patrick.guidebookcodechallenge;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -16,6 +20,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 
 /**
  * Main class for the challenge. Makes a GET request to a given url and displays the returned data
@@ -30,6 +35,7 @@ public class UpcomingGuides extends AppCompatActivity {
     private OkHttpClient client = new OkHttpClient();
     private JSONObject jsonObject = null;
     private ArrayList<GuideDataModel> upcomingGuides;
+    private UpcomingGuideAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +44,31 @@ public class UpcomingGuides extends AppCompatActivity {
 
         upcomingGuides = new ArrayList<>();
 
+        adapter = new UpcomingGuideAdapter(this, upcomingGuides);
+        ListView upcomingGuidesList = (ListView) findViewById((R.id.guide_listview));
+        upcomingGuidesList.setAdapter(adapter);
+
+        if (isNetworkConnected()) {
+
+            // MILESTONE 3: Display your objects in a RecyclerView
+            new GetUpComingGuidesTask().execute();
+        }
     }
 
-    class GetUpComingGuides extends AsyncTask<Void, Void, Void> {
+    /**
+     * Task fetches data from the url.
+     * */
+    class GetUpComingGuidesTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
             if (upcomingGuides.size() > 0) {
-                // success update recycler view
-
+                adapter.notifyDataSetChanged();
             } else {
-                // failed to retrieve data
+                Toast.makeText(getApplicationContext(), "Failed to retrieve data",
+                        Toast.LENGTH_LONG).show();
             }
         }
 
@@ -95,7 +113,7 @@ public class UpcomingGuides extends AppCompatActivity {
                                     String endDate = "";
                                     String guideURL = "";
                                     String name = "";
-                                    String icon =  "";
+                                    String icon = "";
 
                                     // parse JSON object
                                     JSONObject guideItem = jsonArray.getJSONObject(i);
@@ -159,5 +177,14 @@ public class UpcomingGuides extends AppCompatActivity {
 
             return null;
         }
+    }
+
+    /**
+     * Check that we have internet connection
+     */
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return connectivityManager != null && connectivityManager.getActiveNetworkInfo() != null;
     }
 }
