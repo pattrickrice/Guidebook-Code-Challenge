@@ -6,35 +6,37 @@
     android:layout_height="match_parent"
     tools:context="com.patrick.guidebookcodechallenge.UpcomingGuides">
 
+    <!-- Displays the recycle view of the upcoming guides -->
     <ListView
         android:id="@+id/guide_listview"
         android:layout_width="fill_parent"
         android:layout_height="match_parent" />
 
+    <!-- Error layout handles connection issues -->
     <RelativeLayout
         android:id="@+id/error_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
+
+        <!-- Display the error -->
         <TextView
             android:id="@+id/error_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingTop="128dp"
             android:hint="@string/error_message"
-            />
+            android:paddingTop="128dp" />
 
+        <!-- Let the user reload the data -->
         <Button
             android:id="@+id/reload_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/error_tv"
             android:layout_centerInParent="true"
+            android:gravity="center_vertical"
             android:hint="@string/reload_content"
-            />
+            app:layout_constraintTop_toBottomOf="@id/error_tv" />
 
     </RelativeLayout>
 

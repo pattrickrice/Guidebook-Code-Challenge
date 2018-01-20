@@ -12,13 +12,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/guide_icon_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="16dp"
-        tools:src="@drawable/ic_action_name" />
+        <!-- image icon (assumes square format) -->
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/guide_icon_view"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            tools:src="@drawable/ic_action_name" />
     </LinearLayout>
 
 
@@ -40,22 +41,28 @@
 
         <!-- City and State displayed on one line -->
         <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/city_and_state_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="visible">
 
+            <!-- City text view -->
             <TextView
                 android:id="@+id/city_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="City, " />
+                android:hint="City, "
+                android:visibility="visible" />
 
+            <!-- state text view -->
             <TextView
                 android:id="@+id/state_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="State" />
+                android:hint="State"
+                android:visibility="visible" />
         </android.support.v7.widget.LinearLayoutCompat>
 
         <!-- Start and End date displayed on one line -->
@@ -65,19 +72,22 @@
             android:layout_centerVertical="true"
             android:orientation="horizontal">
 
-
+            <!-- start date text -->
             <TextView
                 android:id="@+id/start_date_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/start_date" />
 
+            <!-- end date text -->
             <TextView
                 android:id="@+id/end_date_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/end_date" />
         </android.support.v7.widget.LinearLayoutCompat>
+
     </android.support.v7.widget.LinearLayoutCompat>
+
 
 </RelativeLayout>
