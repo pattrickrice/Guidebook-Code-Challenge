@@ -24,7 +24,7 @@ public class UpcomingGuideAdapter extends ArrayAdapter<GuideDataModel> {
     private LayoutInflater mInflator;
 
     // Required constructor
-    public UpcomingGuideAdapter(Context context, List<GuideDataModel> guideObjects) {
+    UpcomingGuideAdapter(Context context, List<GuideDataModel> guideObjects) {
         super(context, 0, guideObjects);
         this.context = context;
         this.mInflator = LayoutInflater.from(context);
@@ -92,12 +92,12 @@ public class UpcomingGuideAdapter extends ArrayAdapter<GuideDataModel> {
         }
 
         private static ViewHolder create(RelativeLayout rootView) {
-            ImageView iconView = (ImageView) rootView.findViewById(R.id.guide_icon_view);
-            TextView nameView = (TextView) rootView.findViewById(R.id.guide_name_tv);
-            TextView startDateView = (TextView) rootView.findViewById(R.id.start_date_tv);
-            TextView endDateView = (TextView) rootView.findViewById(R.id.end_date_tv);
-            TextView stateView = (TextView) rootView.findViewById(R.id.state_tv);
-            TextView cityView = (TextView) rootView.findViewById(R.id.city_tv);
+            ImageView iconView = rootView.findViewById(R.id.guide_icon_view);
+            TextView nameView = rootView.findViewById(R.id.guide_name_tv);
+            TextView startDateView = rootView.findViewById(R.id.start_date_tv);
+            TextView endDateView = rootView.findViewById(R.id.end_date_tv);
+            TextView stateView = rootView.findViewById(R.id.state_tv);
+            TextView cityView = rootView.findViewById(R.id.city_tv);
 
             return new ViewHolder(rootView, iconView, nameView, startDateView, endDateView, stateView, cityView);
         }

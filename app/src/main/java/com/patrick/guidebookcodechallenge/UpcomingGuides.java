@@ -2,12 +2,16 @@ package com.patrick.guidebookcodechallenge;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -36,51 +40,52 @@ public class UpcomingGuides extends AppCompatActivity {
     private JSONObject jsonObject = null;
     private ArrayList<GuideDataModel> upcomingGuides;
     private UpcomingGuideAdapter adapter;
+    private RelativeLayout errorLayout;
+    private TextView errorTV;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upcoming_guides);
 
+        errorLayout = findViewById(R.id.error_layout);
+        errorTV = findViewById(R.id.error_tv);
+        mHandler = new Handler(Looper.getMainLooper());
+
         upcomingGuides = new ArrayList<>();
 
         adapter = new UpcomingGuideAdapter(this, upcomingGuides);
-        ListView upcomingGuidesList = (ListView) findViewById((R.id.guide_listview));
+        ListView upcomingGuidesList = findViewById((R.id.guide_listview));
         upcomingGuidesList.setAdapter(adapter);
 
-        if (isNetworkConnected()) {
+        getUpcomingGuides();
 
-            // MILESTONE 3: Display your objects in a RecyclerView
-            new GetUpComingGuidesTask().execute();
-        }
+
+        // Reload button appears if the content never loaded.
+        // Allows the user to attempt to reload.
+        final Button button = findViewById(R.id.reload_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                getUpcomingGuides();
+            }
+        });
     }
 
     /**
-     * Task fetches data from the url.
+     * Fetches the guides from the provided URL using OkHttp
      * */
-    class GetUpComingGuidesTask extends AsyncTask<Void, Void, Void> {
+    void getUpcomingGuides() {
+        if (isNetworkConnected()) {
+            // MILESTONE 3: Display your objects in a RecyclerView
+            // request data using OkHttp
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            if (upcomingGuides.size() > 0) {
-                adapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getApplicationContext(), "Failed to retrieve data",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
             // provided API call
             String url = "https://guidebook.com/service/v2/upcomingGuides/";
 
             // create request object for OkHttp
             final Request request = new Request.Builder().url(url).build();
 
-            // request data using OkHttp
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
@@ -98,8 +103,6 @@ public class UpcomingGuides extends AppCompatActivity {
 
                         Log.v(LOGTAG, jsondata);
 
-                        // Handle jsonException
-
                         try {
                             jsonObject = new JSONObject(jsondata);
                             JSONArray jsonArray = jsonObject.getJSONArray(Keys.KEY_DATA);
@@ -109,11 +112,13 @@ public class UpcomingGuides extends AppCompatActivity {
                                 for (int i = 0; i < lengthOfJSONArray; i++) {
 
                                     GuideDataModel model = new GuideDataModel();
-                                    String startDate = "";
-                                    String endDate = "";
-                                    String guideURL = "";
-                                    String name = "";
-                                    String icon = "";
+                                    String startDate = " ";
+                                    String endDate = " ";
+                                    String guideURL = " ";
+                                    String name = " ";
+                                    String icon = " ";
+                                    String city = "";
+                                    String state = "";
 
                                     // parse JSON object
                                     JSONObject guideItem = jsonArray.getJSONObject(i);
@@ -134,11 +139,14 @@ public class UpcomingGuides extends AppCompatActivity {
                                     if (guideItem.has(Keys.KEY_ICON)) {
                                         icon = guideItem.getString(Keys.KEY_ICON);
                                     }
-                                    if (guideItem.has(Keys.KEY_ICON)) {
-                                        icon = guideItem.getString(Keys.KEY_ICON);
-                                    }
-                                    if (guideItem.has(Keys.KEY_ICON)) {
-                                        icon = guideItem.getString(Keys.KEY_ICON);
+
+                                    // getting info from venue object
+                                    JSONObject venueItem = guideItem.getJSONObject(Keys.KEY_VENUE);
+
+                                    // URL did not return item in venue object at time of writing this.
+                                    if (venueItem.has(Keys.KEY_CITY) && venueItem.has(Keys.KEY_STATE)) {
+                                        city = guideItem.getString(Keys.KEY_CITY);
+                                        state = guideItem.getString(Keys.KEY_STATE);
                                     }
 
                                     // set to data structure
@@ -147,35 +155,41 @@ public class UpcomingGuides extends AppCompatActivity {
                                     model.setUrl(guideURL);
                                     model.setName(name);
                                     model.setIcon(icon);
-
-                                    // getting info from venue object
-                                    JSONObject venueItem = guideItem.getJSONObject(Keys.KEY_VENUE);
-
-                                    // URL did not return item in venue object at time of writing this.
-                                    if (venueItem.has(Keys.KEY_CITY) && venueItem.has(Keys.KEY_STATE)) {
-                                        String city = guideItem.getString(Keys.KEY_CITY);
-                                        String state = guideItem.getString(Keys.KEY_STATE);
-
-                                        // set to model
-                                        model.setCity(city);
-                                        model.setState(state);
-                                    }
+                                    model.setCity(city);
+                                    model.setState(state);
 
                                     // add to the list
                                     // MILESTONE 2: Parse the data retrieved from the server into a list of Java objects
                                     upcomingGuides.add(model);
+
+                                    // If we didn't load the guides, show the error layout.
+                                    if (upcomingGuides.size() == 0) {
+                                        errorLayout.setVisibility(View.VISIBLE);
+                                    } else if (errorLayout.getVisibility() == View.VISIBLE) {
+                                        errorLayout.setVisibility(View.GONE);
+                                    }
+
+                                    // update the adapter.
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // MILESTONE 3: Display your objects in a RecyclerView
+                                            // request data using OkHttp
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
                                 }
                             }
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             });
-
-
-            return null;
+        } else {
+            // no internet connection
+                errorLayout.setVisibility(View.VISIBLE);
+                errorTV.setText(R.string.no_internet_connection);
         }
     }
 

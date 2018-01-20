@@ -3,4 +3,7 @@
     <string name="start_date">Start date -</string>
     <string name="end_date">End date</string>
     <string name="http_www_iconurl_com">http://www.iconurl.com</string>
+    <string name="error_message">Oop! Something went wrong!</string>
+    <string name="reload_content">Reload Content</string>
+    <string name="no_internet_connection">Could not connect to the internet</string>
 </resources>
