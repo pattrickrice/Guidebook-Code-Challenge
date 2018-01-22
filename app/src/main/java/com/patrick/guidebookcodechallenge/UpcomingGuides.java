@@ -74,7 +74,7 @@ public class UpcomingGuides extends AppCompatActivity {
 
     /**
      * Fetches the guides from the provided URL using OkHttp
-     * */
+     */
     void getUpcomingGuides() {
         if (isNetworkConnected()) {
             // MILESTONE 3: Display your objects in a RecyclerView
@@ -162,12 +162,6 @@ public class UpcomingGuides extends AppCompatActivity {
                                     // MILESTONE 2: Parse the data retrieved from the server into a list of Java objects
                                     upcomingGuides.add(model);
 
-                                    // If we didn't load the guides, show the error layout.
-                                    if (upcomingGuides.size() == 0) {
-                                        errorLayout.setVisibility(View.VISIBLE);
-                                    } else if (errorLayout.getVisibility() == View.VISIBLE) {
-                                        errorLayout.setVisibility(View.GONE);
-                                    }
 
                                     // update the adapter.
                                     mHandler.post(new Runnable() {
@@ -176,6 +170,13 @@ public class UpcomingGuides extends AppCompatActivity {
                                             // MILESTONE 3: Display your objects in a RecyclerView
                                             // request data using OkHttp
                                             adapter.notifyDataSetChanged();
+
+                                            // If we didn't load the guides, show the error layout.
+                                            if (upcomingGuides.size() == 0) {
+                                                errorLayout.setVisibility(View.VISIBLE);
+                                            } else if (errorLayout.getVisibility() == View.VISIBLE) {
+                                                errorLayout.setVisibility(View.GONE);
+                                            }
                                         }
                                     });
                                 }
@@ -188,8 +189,8 @@ public class UpcomingGuides extends AppCompatActivity {
             });
         } else {
             // no internet connection
-                errorLayout.setVisibility(View.VISIBLE);
-                errorTV.setText(R.string.no_internet_connection);
+            errorLayout.setVisibility(View.VISIBLE);
+            errorTV.setText(R.string.no_internet_connection);
         }
     }
 
