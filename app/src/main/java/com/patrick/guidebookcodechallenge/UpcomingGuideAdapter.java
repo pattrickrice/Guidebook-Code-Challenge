@@ -63,7 +63,10 @@ public class UpcomingGuideAdapter extends ArrayAdapter<GuideDataModel> {
         viewHolder.cityView.setText(guideModel.getCity());
         viewHolder.stateView.setText(guideModel.getState());
         viewHolder.startDateView.setText(guideModel.getStartDate());
-        viewHolder.endDateView.setText(String.format(" - %s", guideModel.getStartDate()));
+        viewHolder.endDateView.setText(String.format(guideModel.getStartDate()));
+
+        // Didn't need to include start date for challenge
+        viewHolder.startDateView.setVisibility(View.GONE);
 
         // Handle if city and state objects are not present
         if (guideModel.getState() == "" && guideModel.getCity() == "") {

@@ -5,7 +5,6 @@ package com.patrick.guidebookcodechallenge;
  */
 
 class Keys {
-
     // Unused keys present int JSON object
     static final String KEY_TOTAL          = "total";
     static final String KEY_OBJ_TYPE       = "objType";
